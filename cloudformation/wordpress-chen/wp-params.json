@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "wp-key-temp"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "t2.small"
+  },
+  {
+    "ParameterKey": "SSHLocation",
+    "ParameterValue": "0.0.0.0/0"
+  },
+  {
+    "ParameterKey": "DBName",
+    "ParameterValue": "wordpressdb"
+  },
+  {
+    "ParameterKey": "DBUser",
+    "ParameterValue": "user"
+  },
+  {
+    "ParameterKey": "DBPassword",
+    "ParameterValue": "12345678"
+  },
+  {
+    "ParameterKey": "DBRootPassword",
+    "ParameterValue": "87654321"
+  }
+]
