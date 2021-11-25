@@ -1,0 +1,48 @@
+Document:
+  CreatedDate: '2020-04-23T20:30:59.184000+03:00'
+  DefaultVersion: '1'
+  Description: "### Document name - AWS-ConfigureCloudWatchOnEC2Instance\n\n## What
+    does this document do?\nThe AWS-ConfigureCloudWatchOnEC2Instance Automation document
+    enables or disables CloudWatch monitoring on an EC2 instance.\n\n## Input Parameters\n*
+    InstanceId: (Required) The ID of the EC2 instance on which you want to enable
+    CloudWatch monitoring.\n* status: (Optional) Specifies whether to enable or disable
+    CloudWatch.\n  * Allowed Values: Enabled | Disabled\n  * Default: Enabled\n* properties:
+    (Optional) This parameter is not supported. It is listed here for backwards compatibility.\n*
+    AutomationAssumeRole: (Optional) The Amazon Resource Name (ARN) of the role that
+    allows SSM Automation to perform the actions on your behalf.\n\n## Output parameters\nNone\n"
+  DocumentFormat: YAML
+  DocumentType: Automation
+  DocumentVersion: '1'
+  Hash: a03d5965b3e8c25de74bfa3c981c5424744ff90c8e5d66a3fc6355fa2ce6ab5c
+  HashType: Sha256
+  LatestVersion: '1'
+  Name: AWS-ConfigureCloudWatchOnEC2Instance
+  Owner: Amazon
+  Parameters:
+  - Description: (Required) The ID of the EC2 instance on which you want to enable
+      CloudWatch monitoring.
+    Name: InstanceId
+    Type: String
+  - DefaultValue: Enabled
+    Description: '(Optional) Specifies whether to enable or disable CloudWatch. Valid
+      values: "Enabled" | "Disabled"'
+    Name: status
+    Type: String
+  - DefaultValue: ''
+    Description: (Optional) The Amazon Resource Name (ARN) of the role that allows
+      SSM Automation to perform the actions on your behalf.
+    Name: AutomationAssumeRole
+    Type: String
+  - DefaultValue: ''
+    Description: (Optional) This parameter is not supported. It is listed here for
+      backwards compatibility.
+    Name: properties
+    Type: String
+  PlatformTypes:
+  - Windows
+  - Linux
+  - MacOS
+  SchemaVersion: '0.3'
+  Status: Active
+  Tags: []
+  TargetType: /AWS::EC2::Instance
