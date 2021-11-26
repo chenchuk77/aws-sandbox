@@ -1,0 +1,26 @@
+Document:
+  CreatedDate: '2020-07-27T16:14:40.971000+03:00'
+  DefaultVersion: '19'
+  Description: Install Node.js (https://github.com/nak2k/aws-ssm-document)
+  DocumentFormat: YAML
+  DocumentType: Command
+  DocumentVersion: '19'
+  Hash: 77321094b9481f11fec019c62bb48dbcac4d484919b4ed6ce18245dbc1f9d29e
+  HashType: Sha256
+  LatestVersion: '19'
+  Name: arn:aws:ssm:eu-west-1:185030254733:document/nak2k-InstallNode
+  Owner: '185030254733'
+  Parameters:
+  - DefaultValue: 14.6.0
+    Description: Version of Node.js
+    Name: version
+    Type: String
+  - DefaultValue: ec2-user
+    Description: Owner of installed node.js
+    Name: owner
+    Type: String
+  PlatformTypes:
+  - Linux
+  SchemaVersion: '2.0'
+  Status: Active
+  Tags: []

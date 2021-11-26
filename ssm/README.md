@@ -45,7 +45,8 @@ aws ssm describe-document \
 
 # public docs use ARN's
 aws ssm describe-document \
-    -- name arn:aws:ssm:eu-west-1:185030254733:document/nak2k-InstallNode
+    --name arn:aws:ssm:eu-west-1:185030254733:document/nak2k-InstallNode \
+    > ssm.item.public.InstallNode.output.yml
 
 ```
 
