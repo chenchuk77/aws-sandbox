@@ -1,0 +1,15 @@
+[
+  {
+    "ParameterKey": "OperatorEmail",
+    "ParameterValue": "chenchuk@gmail.com"
+  },
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "key-wp-temp"
+  },
+  {
+    "ParameterKey": "SSHLocation",
+    "ParameterValue": "0.0.0.0/0"
+  }
+
+]
