@@ -22,3 +22,4 @@ Example of VPC with RDS multi AZ. Taken from AWS examples with some modification
       --capabilities CAPABILITY_IAM \
       --disable-rollback
   ```
+  

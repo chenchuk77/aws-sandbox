@@ -8,6 +8,10 @@
     "ParameterValue": "subnet-060265e5498b2bf1f,subnet-03b135a370b5108ac"
   },
   {
+    "ParameterKey": "OperatorEMail",
+    "ParameterValue": "chenchuk@gmail.com"
+  },
+  {
     "ParameterKey": "KeyName",
     "ParameterValue": "key-wp-temp"
   },
@@ -19,7 +23,6 @@
     "ParameterKey": "DBClass",
     "ParameterValue": "db.t3.micro"
   },
-
   {
     "ParameterKey": "SSHLocation",
     "ParameterValue": "0.0.0.0/0"

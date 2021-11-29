@@ -2,6 +2,9 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "AWS CloudFormation Sample Template WordPress_Multi_AZ: WordPress is web software you can use to create a beautiful website or blog. This template installs a highly-available, scalable WordPress deployment using a multi-az Amazon RDS database instance for storage. It demonstrates using the AWS CloudFormation bootstrap scripts to deploy WordPress. **WARNING** This template creates an Amazon EC2 instance, an Application Load Balancer and an Amazon RDS database instance. You will be billed for the AWS resources used if you create a stack from this template.",
   "Parameters": {
+    "OperatorEMail" : {
+      "Type": "String"
+    },
     "VpcId": {
       "Type": "AWS::EC2::VPC::Id",
       "Description": "VpcId of your existing Virtual Private Cloud (VPC)",
@@ -1042,6 +1045,57 @@
           { "Key": "todo", "Value": "delete-me" }
         ]
 
+      }
+    },
+    "NotificationTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName" : "chen-wp-topic-temp",
+        "Subscription": [
+          {
+            "Endpoint": {
+              "Ref": "OperatorEMail"
+            },
+            "Protocol": "email"
+          }
+        ]
+      }
+    },
+    "CPUAlarm" : {
+      "Type" : "AWS::CloudWatch::Alarm",
+      "Properties" : {
+        "AlarmDescription" : "CPU alarm ASG instances (total capacity)",
+        "AlarmActions" : [ { "Ref" : "NotificationTopic" } ],
+        "MetricName" : "CPUUtilization",
+        "Namespace" : "AWS/EC2",
+        "Statistic" : "Average",
+        "Period" : "60",
+        "EvaluationPeriods" : "3",
+        "Threshold" : "90",
+        "ComparisonOperator" : "GreaterThanThreshold",
+        "Dimensions" : [ {
+          "Name" : "AutoScalingGroupName",
+          "Value" : { "Ref" : "WebServerGroup" }
+        } ]
+      }
+    },
+    "RDSCPUAlarm" : {
+      "Type" : "AWS::CloudWatch::Alarm",
+      "Properties" : {
+        "AlarmDescription" : "CPU alarm for RDS",
+        "AlarmActions" : [ { "Ref" : "NotificationTopic" } ],
+        "MetricName" : "CPUUtilization",
+        "Namespace" : "AWS/RDS",
+        "Statistic" : "Average",
+        "Period" : "60",
+        "EvaluationPeriods" : "3",
+        "Threshold" : "10",
+        "ComparisonOperator" : "GreaterThanThreshold",
+        "Dimensions": [{
+            "Name": "DBInstanceIdentifier",
+            "Value": { "Ref" : "DBInstance" }
+          }
+        ]
       }
     }
   },

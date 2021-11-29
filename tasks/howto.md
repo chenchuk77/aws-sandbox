@@ -109,6 +109,27 @@ example template:
  
   ```
 
+
+
+
+
+* Yes stress test (SSH to instance and invoke) 
+* ```
+for i in $(seq $(getconf _NPROCESSORS_ONLN)); do yes > /dev/null & done
+``
+
+* RDS Load:
+* ```
+  mysqlslap -uuser -p12345678 -hsd1tcztimfycrbp.ch4cnmnpag8a.eu-west-1.rds.amazonaws.com \
+    --concurrency=50 \
+    --iterations=500 \
+    --number-int-cols=2 \
+    --number-char-cols=3 \
+    --auto-generate-sql
+  
+  ```
+
+
 ASG: source template : 
 https://github.com/awsdocs/aws-cloudformation-user-guide/blob/main/doc_source/example-templates-autoscaling.md
 
