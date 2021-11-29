@@ -1,0 +1,234 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Testing rds-multi-az deployment",
+    "Parameters": {
+        "AZ1": {
+            "Type": "String",
+            "Default": "eu-west-1a"
+        },
+        "AZ2": {
+            "Type": "String",
+            "Default": "eu-west-1b"
+        },
+        "VpcCIDR": {
+            "Type": "String",
+            "Default": "192.168.233.0/24"
+        },
+        "Subnet1CIDR": {
+            "Type": "String",
+            "Default": "192.168.233.16/28"
+        },
+        "Subnet2CIDR": {
+            "Type": "String",
+            "Default": "192.168.233.32/28"
+        },
+        "MasterUsername": {
+            "Type": "String"
+        },
+        "MasterUserPassword": {
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "VpcTemp": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": { "Ref": "VpcCIDR"},
+                "EnableDnsSupport": "true",
+                "EnableDnsHostnames": "true",
+                "Tags": [
+                    { "Key": "Name", "Value": "vpc-chen-temp" },
+                    { "Key": "Owner", "Value": "chen" },
+                    { "Key": "todo", "Value": "delete-me" }
+                ]
+            }
+        },
+        "Subnet1Temp": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": { "Ref": "VpcTemp" },
+                "CidrBlock": { "Ref": "Subnet1CIDR"},
+                "Tags": [
+                    { "Key": "Name", "Value": "subnet1-chen-temp" },
+                    { "Key": "Owner", "Value": "chen" },
+                    { "Key": "todo", "Value": "delete-me" }
+                ],
+                "AvailabilityZone": { "Ref": "AZ1" }
+            }
+        },
+        "Subnet2Temp": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": { "Ref": "VpcTemp" },
+                "CidrBlock": { "Ref": "Subnet2CIDR"},
+                "Tags": [
+                    { "Key": "Name", "Value": "subnet2-chen-temp" },
+                    { "Key": "Owner", "Value": "chen" },
+                    { "Key": "todo", "Value": "delete-me" }
+                ],
+                "AvailabilityZone": { "Ref": "AZ2" }
+            }
+        },
+        "IgwTemp": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    { "Key": "Name", "Value": "igw-chen-temp" },
+                    { "Key": "Owner", "Value": "chen" },
+                    { "Key": "todo", "Value": "delete-me" }
+                ]
+            }
+        },
+        "GwAttachTemp": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VpcTemp"
+                },
+                "InternetGatewayId": {
+                    "Ref": "IgwTemp"
+                }
+            }
+        },
+        "RtTemp": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VpcTemp"
+                },
+                "Tags": [
+                    { "Key": "Name", "Value": "rt-chen-temp" },
+                    { "Key": "Owner", "Value": "chen" },
+                    { "Key": "todo", "Value": "delete-me" }
+                ]
+            }
+        },
+        "RouteDefault": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": "GwAttachTemp",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "RtTemp"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "IgwTemp"
+                }
+            }
+        },
+        "RtAssoc1": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "Subnet1Temp"
+                },
+                "RouteTableId": {
+                    "Ref": "RtTemp"
+                }
+            }
+        },
+        "RtAssoc2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "Subnet2Temp"
+                },
+                "RouteTableId": {
+                    "Ref": "RtTemp"
+                }
+            }
+        },
+        "SubnetGroupTemp": {
+            "Type": "AWS::RDS::DBSubnetGroup",
+            "Properties": {
+                "DBSubnetGroupDescription": "2 subnets from 2 different AZs",
+                "DBSubnetGroupName": {
+                    "Fn::Sub": "chen-temp-${AWS::Region}-dbsg"
+                },
+                "SubnetIds": [
+                    { "Ref": "Subnet1Temp" },
+                    { "Ref": "Subnet2Temp" }
+                ],
+                "Tags": [
+                    { "Key": "Name", "Value": "dbsg-chen-temp" },
+                    { "Key": "Owner", "Value": "chen" },
+                    { "Key": "todo", "Value": "delete-me" }
+                ]
+            }
+        },
+        "SgTemp": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Database instances security group",
+                "VpcId": { "Ref": "VpcTemp" },
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": { "Ref": "VpcCIDR"},
+                        "FromPort": 3306,
+                        "IpProtocol": "tcp",
+                        "ToPort": 3306
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "IpProtocol": "-1"
+                    }
+                ]
+            }
+        },
+        "RdsTemp": {
+            "Type": "AWS::RDS::DBInstance",
+            "Properties": {
+                "DBInstanceIdentifier": "rds-chen-temp-multi-az",
+                "AllocatedStorage": 100,
+                "DBInstanceClass": "db.t3.micro",
+                "Engine": "MYSQL",
+                "MasterUsername": {
+                    "Ref": "MasterUsername"
+                },
+                "MasterUserPassword": {
+                    "Ref": "MasterUserPassword"
+                },
+                "BackupRetentionPeriod": 7,
+                "MultiAZ": true,
+                "EngineVersion": "8.0.23",
+                "AutoMinorVersionUpgrade": true,
+                "PubliclyAccessible": false,
+                "StorageType": "gp2",
+                "Port": 3306,
+                "CopyTagsToSnapshot": true,
+                "DeletionProtection": false,
+                "DBSubnetGroupName": {
+                    "Ref": "SubnetGroupTemp"
+                },
+                "VPCSecurityGroups": [
+                    {
+                        "Ref": "SgTemp"
+                    }
+                ],
+                "Tags": [
+                    { "Key": "Name", "Value": "rds-cluster-chen-temp" },
+                    { "Key": "Owner", "Value": "chen" },
+                    { "Key": "todo", "Value": "delete-me" }
+                ]
+            }
+        }
+
+    },
+    "Outputs": {
+        "Cluster": {
+            "Description": "RDS cluster name",
+            "Value": {
+                "Ref": "RdsTemp"
+            }
+        },
+        "SubnetGroup": {
+            "Description": "RDS subnet-group name",
+            "Value": {
+                "Ref": "SubnetGroupTemp"
+            }
+        }
+
+    }
+}

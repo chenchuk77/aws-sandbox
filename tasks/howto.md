@@ -53,10 +53,61 @@ example template:
    ```
 
 
+   * Launch vpc/rds-multi-az (necessary infra for WordPress_Multi_AZ.template )
+   ```
+   aws cloudformation create-stack \                                                    
+      --stack-name stack-vpc-rds-temp \
+      --template-body file://vpc-rds-multi-az.template \
+      --parameters file://vpc-rds-multi-az.json \
+      --capabilities CAPABILITY_IAM \
+      --disable-rollback
+
+   
+   ```
+
+* Launch ASG template, passing the json as parameters:
+  ```
+  aws cloudformation create-stack \
+      --stack-name stack-asg-wp-temp \
+      --template-body file://asg-wp.template \
+      --parameters file://asg-wp.json \
+      --capabilities CAPABILITY_IAM \
+      --disable-rollback
+  ```
+
+  
+  Can wait for final state signal:
+  ```
+  # this command is blocking until final cfn state
+  aws cloudformation wait stack-create-complete \
+      --stack-name stack-cw-log-temp
+  
+  # verify
+  echo $?
+  0
+
+  ```
+
+  Get template from cloudformation:
+  ```
+  aws cloudformation get-template \
+      --stack-name stack-chen-test111 \
+      --output json \
+      > stack-chen-test111-from-cfn.template
+ 
+  ```
+
+ASG: source template : 
+https://github.com/awsdocs/aws-cloudformation-user-guide/blob/main/doc_source/example-templates-autoscaling.md
+
+
 
 myweb
 wpuser
 123eqw83@WE3q
 chenchuk@gmail.com
 discourage-search-engine-visibility=TRUE
+
+
+aws ec2 describe-availability-zones --region eu-west-1 --output table
 

@@ -1,0 +1,11 @@
+[
+  {
+    "ParameterKey": "MasterUsername",
+    "ParameterValue": "masteruser"
+  },
+  {
+    "ParameterKey": "MasterUserPassword",
+    "ParameterValue": "masterpass"
+  }
+
+]
