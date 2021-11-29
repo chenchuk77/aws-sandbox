@@ -16,11 +16,11 @@
         },
         "Subnet1CIDR": {
             "Type": "String",
-            "Default": "192.168.233.16/28"
+            "Default": "192.168.233.0/26"
         },
         "Subnet2CIDR": {
             "Type": "String",
-            "Default": "192.168.233.32/28"
+            "Default": "192.168.233.64/26"
         },
         "MasterUsername": {
             "Type": "String"

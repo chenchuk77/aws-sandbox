@@ -65,6 +65,18 @@ example template:
    
    ```
 
+   * Launch aws WordPress_Multi_AZ multi-az (ec2/alb/asg) on existing infra (vpc/dbsg/subnets/igw/etc)
+   ```
+    aws cloudformation create-stack \
+          --stack-name stack-aws-wpmaz-temp \
+          --template-body file://WordPress_Multi_AZ.template \
+          --parameters file://WordPress_Multi_AZ.json \
+          --capabilities CAPABILITY_IAM \
+          --disable-rollback
+    
+    ```
+
+
 * Launch ASG template, passing the json as parameters:
   ```
   aws cloudformation create-stack \
