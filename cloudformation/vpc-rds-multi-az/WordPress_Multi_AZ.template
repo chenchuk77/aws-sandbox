@@ -746,7 +746,13 @@
           {
             "Ref": "ALBTargetGroup"
           }
+        ],
+        "Tags":[
+          { "Key": "Name", "Value": "asg-wpmaz-temp", "PropagateAtLaunch":"true" },
+          { "Key": "Owner", "Value": "chen", "PropagateAtLaunch":"true" },
+          { "Key": "todo", "Value": "delete-me", "PropagateAtLaunch":"true" }
         ]
+
       },
       "CreationPolicy": {
         "ResourceSignal": {
@@ -936,6 +942,7 @@
           "Ref": "KeyName"
         },
         "AssociatePublicIpAddress": "true",
+
 
         "UserData": {
           "Fn::Base64": {

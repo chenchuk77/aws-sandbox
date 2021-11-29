@@ -176,59 +176,31 @@
                     }
                 ]
             }
-        },
-        "RdsTemp": {
-            "Type": "AWS::RDS::DBInstance",
-            "Properties": {
-                "DBInstanceIdentifier": "rds-chen-temp-multi-az",
-                "AllocatedStorage": 100,
-                "DBInstanceClass": "db.t3.micro",
-                "Engine": "MYSQL",
-                "MasterUsername": {
-                    "Ref": "MasterUsername"
-                },
-                "MasterUserPassword": {
-                    "Ref": "MasterUserPassword"
-                },
-                "BackupRetentionPeriod": 7,
-                "MultiAZ": true,
-                "EngineVersion": "8.0.23",
-                "AutoMinorVersionUpgrade": true,
-                "PubliclyAccessible": false,
-                "StorageType": "gp2",
-                "Port": 3306,
-                "CopyTagsToSnapshot": true,
-                "DeletionProtection": false,
-                "DBSubnetGroupName": {
-                    "Ref": "SubnetGroupTemp"
-                },
-                "VPCSecurityGroups": [
-                    {
-                        "Ref": "SgTemp"
-                    }
-                ],
-                "Tags": [
-                    { "Key": "Name", "Value": "rds-cluster-chen-temp" },
-                    { "Key": "Owner", "Value": "chen" },
-                    { "Key": "todo", "Value": "delete-me" }
-                ]
-            }
         }
 
     },
     "Outputs": {
-        "Cluster": {
-            "Description": "RDS cluster name",
-            "Value": {
-                "Ref": "RdsTemp"
-            }
-        },
         "SubnetGroup": {
             "Description": "RDS subnet-group name",
-            "Value": {
-                "Ref": "SubnetGroupTemp"
-            }
-        }
+            "Value": { "Ref": "SubnetGroupTemp" }
+        },
+        "VpcId": {
+            "Description": "vpc-id",
+            "Value": { "Ref": "VpcTemp" },
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-vpc-temp" }}
 
+        },
+        "Subnet1": {
+            "Description": "subnet1-id",
+            "Value" :  { "Ref" : "Subnet1Temp" },
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-subnet1-temp" }}
+
+        },
+        "Subnet2": {
+            "Description": "subnet2-id",
+            "Value" :  { "Ref" : "Subnet2Temp" },
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-subnet2-temp" }}
+
+        }
     }
 }
