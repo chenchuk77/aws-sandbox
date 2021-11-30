@@ -190,6 +190,12 @@
             "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-vpc-temp" }}
 
         },
+        "RouteTable": {
+            "Description": "vpc-id",
+            "Value": { "Ref": "RtTemp" },
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-rt-temp" }}
+
+        },
         "Subnet1": {
             "Description": "subnet1-id",
             "Value" :  { "Ref" : "Subnet1Temp" },

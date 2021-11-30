@@ -22,4 +22,11 @@ Example of VPC with RDS multi AZ. Taken from AWS examples with some modification
       --capabilities CAPABILITY_IAM \
       --disable-rollback
   ```
-  
+
+* Example of dependent stacks using import/export
+  ```
+  aws cloudformation create-stack \
+      --stack-name stack-sub3-temp \
+      --template-body file://subnet3.template \
+      --parameters ParameterKey=VpcStack,ParameterValue=stack-vpc-rds-temp
+  ```
