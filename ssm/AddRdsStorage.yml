@@ -1,0 +1,84 @@
+description: |
+  *Adding storage to an RDS instance.*
+
+  ---
+  # AddRdsStorage
+    This is an automation document to add storage to an RDS instance.
+    ## Required parameters
+    * DBInstanceIdentifier
+    * AdditionalStorage (GB)
+
+    see on github: [AddRdsStorage.yml](https://github.com/chenchuk77/aws-sandbox/blob/main/ssm/AddRdsStorage.yml).
+schemaVersion: '0.3'
+parameters:
+  AdditionalStorage:
+    type: Integer
+    default: 10
+  DBInstanceIdentifier:
+    type: String
+    default: sd1goqa6jkspkbc
+mainSteps:
+  - name: GetCurrentStorage
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: rds
+      Api: DescribeDBInstances
+      DBInstanceIdentifier: '{{ DBInstanceIdentifier }}'
+    outputs:
+      - Selector: '$.DBInstances[0].AllocatedStorage'
+        Type: Integer
+        Name: CurrentStorage
+  - name: CalculateTotalStorage
+    action: 'aws:executeScript'
+    inputs:
+      Runtime: python3.6
+      Handler: script_handler
+      Script: |-
+        def script_handler(events, context):
+          total = events['current'] + events['additional']
+          return {'total': total}
+      InputPayload:
+        dbid: '{{DBInstanceIdentifier}}'
+        current: '{{ GetCurrentStorage.CurrentStorage }}'
+        additional: '{{ AdditionalStorage }}'
+    outputs:
+      - Selector: $.Payload.total
+        Type: Integer
+        Name: TotalStorage
+  - name: ModifyDBInstance
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: rds
+      Api: ModifyDBInstance
+      DBInstanceIdentifier: '{{ DBInstanceIdentifier }}'
+      AllocatedStorage: '{{ CalculateTotalStorage.TotalStorage }}'
+      ApplyImmediately: true
+    outputs:
+      - Selector: $.DBInstance.AllocatedStorage
+        Type: Integer
+        Name: AllocatedStorage
+  - name: waitForRdsModificationToStart
+    action: 'aws:waitForAwsResourceProperty'
+    onFailure: Abort
+    maxAttempts: 10
+    timeoutSeconds: 60
+    inputs:
+      Service: rds
+      Api: DescribeDBInstances
+      DBInstanceIdentifier: '{{ DBInstanceIdentifier }}'
+      PropertySelector: '$.DBInstances[0].DBInstanceStatus'
+      DesiredValues:
+        - modifying
+  - name: waitForRdsToBeAvailable
+    action: 'aws:waitForAwsResourceProperty'
+    onFailure: Abort
+    maxAttempts: 10
+    timeoutSeconds: 1200
+    inputs:
+      Service: rds
+      Api: DescribeDBInstances
+      DBInstanceIdentifier: '{{ DBInstanceIdentifier }}'
+      PropertySelector: '$.DBInstances[0].DBInstanceStatus'
+      DesiredValues:
+        - available
+    isEnd: true
