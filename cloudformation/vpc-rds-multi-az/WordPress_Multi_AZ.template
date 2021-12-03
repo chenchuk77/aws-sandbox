@@ -737,8 +737,14 @@
         "VPCZoneIdentifier": {
           "Ref": "Subnets"
         },
-        "LaunchConfigurationName": {
-          "Ref": "LaunchConfig"
+        "LaunchTemplate": {
+          "LaunchTemplateId": {"Ref":"LaunchTemplate" },
+          "Version":{
+            "Fn::GetAtt":[
+              "LaunchTemplate",
+              "LatestVersionNumber"
+            ]
+          }
         },
         "MinSize": "1",
         "MaxSize": "5",
@@ -771,8 +777,8 @@
         }
       }
     },
-    "LaunchConfig": {
-      "Type": "AWS::AutoScaling::LaunchConfiguration",
+    "LaunchTemplate": {
+      "Type": "AWS::EC2::LaunchTemplate",
       "Metadata": {
         "AWS::CloudFormation::Init": {
           "configSets": {
@@ -813,13 +819,13 @@
                     [
                       "[cfn-auto-reloader-hook]\n",
                       "triggers=post.update\n",
-                      "path=Resources.LaunchConfig.Metadata.AWS::CloudFormation::Init\n",
+                      "path=Resources.LaunchTemplate.Metadata.AWS::CloudFormation::Init\n",
                       "action=/opt/aws/bin/cfn-init -v ",
                       "         --stack ",
                       {
                         "Ref": "AWS::StackName"
                       },
-                      "         --resource LaunchConfig ",
+                      "         --resource LaunchTemplate ",
                       "         --configsets wordpress_install ",
                       "         --region ",
                       {
@@ -916,38 +922,43 @@
         }
       },
       "Properties": {
-        "ImageId": {
-          "Fn::FindInMap": [
-            "AWSRegionArch2AMI",
-            {
-              "Ref": "AWS::Region"
-            },
-            {
-              "Fn::FindInMap": [
-                "AWSInstanceType2Arch",
-                {
-                  "Ref": "InstanceType"
-                },
-                "Arch"
-              ]
-            }
-          ]
-        },
-        "InstanceType": {
-          "Ref": "InstanceType"
-        },
-        "SecurityGroups": [
-          {
-            "Ref": "WebServerSecurityGroup"
-          }
-        ],
-        "KeyName": {
-          "Ref": "KeyName"
-        },
-        "AssociatePublicIpAddress": "true",
-
-
-        "UserData": {
+        "LaunchTemplateName":"WpLaunchTemplate-temp",
+        "LaunchTemplateData":{
+          "ImageId": {
+            "Fn::FindInMap": [
+              "AWSRegionArch2AMI",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Fn::FindInMap": [
+                  "AWSInstanceType2Arch",
+                  {
+                    "Ref": "InstanceType"
+                  },
+                  "Arch"
+                ]
+              }
+            ]
+          },
+          "InstanceType": {
+            "Ref": "InstanceType"
+          },
+          "KeyName": {
+            "Ref": "KeyName"
+          },
+          "NetworkInterfaces" : [{
+            "AssociatePublicIpAddress" : "True",
+            "DeleteOnTermination" : "True",
+            "SubnetId" : { "Fn::Select" : [ "0", {"Ref": "Subnets"} ] },
+            "DeviceIndex" : "0",
+            "Groups" : [
+              {
+                "Ref": "WebServerSecurityGroup"
+              }
+            ]
+          }],
+          "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
               "",
@@ -959,7 +970,7 @@
                 {
                   "Ref": "AWS::StackName"
                 },
-                "         --resource LaunchConfig ",
+                "         --resource LaunchTemplate ",
                 "         --configsets wordpress_install ",
                 "         --region ",
                 {
@@ -980,6 +991,7 @@
               ]
             ]
           }
+        }
         }
       }
     },
@@ -1100,6 +1112,13 @@
     }
   },
   "Outputs": {
+    "DesiredCapacity": {
+      "Value": { "Ref": "WebServerCapacity" },
+      "Description": "desired servers count from cfn template"
+
+    },
+
+
     "WebsiteURL": {
       "Value": {
         "Fn::Join": [
@@ -1117,6 +1136,30 @@
         ]
       },
       "Description": "WordPress Website"
+    },
+    "AMI": {
+      "Value": {
+        "Fn::FindInMap": [
+          "AWSRegionArch2AMI",
+          {
+            "Ref": "AWS::Region"
+          },
+          {
+            "Fn::FindInMap": [
+              "AWSInstanceType2Arch",
+              {
+                "Ref": "InstanceType"
+              },
+              "Arch"
+            ]
+          }
+        ]
+      },
+      "Description": "Amazon image id"
+    },
+    "LaunchTemplate": {
+      "Value": {"Ref": "LaunchTemplate" },
+      "Description": "LaunchTemplate used to create the wordpress instances"
     }
   }
 }
