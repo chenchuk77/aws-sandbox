@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This template provisions an IAM Role intended for use by the EC2 service, and an IAM Policy associated with the role that grants read access to all CloudWatch logs.
+Parameters:
+  TestInstance:
+    Type: String
+    Description: InstanceId of the EC2 instance to start/stop by fis
+    Default: i-0beb9b461e8e8090e
+  TestRDS:
+    Type: String
+    Description: InstanceId of the RDS to reboot by fis
+    Default: sd1lzdre0kby6q
+  PolicyName:
+    Type: String
+    Description: Name for the IAM Policy?
+    Default: fis-policy
+  RoleName:
+    Type: String
+    Description: Name for the IAM Role
+    Default: fis-role
+Resources:
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - fis.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Path: /
+      RoleName: !Ref RoleName
+
+  Policy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Ref PolicyName
+      Roles:
+        - !Ref Role
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowFISExperimentRoleCloudWatchActions
+            Effect: Allow
+            Action:
+              - cloudwatch:DescribeAlarms
+            Resource: '*'
+          - Sid: AllowFISExperimentRoleEC2ReadOnly
+            Effect: Allow
+            Action:
+              - ec2:DescribeInstances
+            Resource: '*'
+          - Sid: AllowFISExperimentRoleEC2Actions
+            Effect: Allow
+            Action:
+              - ec2:StartInstances
+              - ec2:StopInstances
+            Resource: !Sub "arn:aws:ec2:*:*:instance/${TestInstance}"
+          - Sid: AllowFISExperimentRoleRDSReadOnly
+            Effect: Allow
+            Action:
+              - rds:DescribeDBInstances
+              - rds:DescribeDbClusters
+            Resource: '*'
+          - Sid: AllowFISExperimentRoleRDSReboot
+            Effect: Allow
+            Action:
+              - rds:RebootDBInstance
+              - ec2:StopInstances
+            Resource: !Sub "arn:aws:rds:*:*:db:${TestRDS}"
+
+Outputs:
+  RoleName:
+    Description: The Role Name associated with the IAM Role
+    Value: !Ref Role
+    Export:
+      Name: !Join ["-", [!Ref "AWS::StackName", "role-name"]]
+
+  RoleARN:
+    Description: The ARN of the IAM Role
+    Value: !GetAtt Role.Arn
+    Export:
+      Name: !Join ["-", [!Ref "AWS::StackName", "role-arn"]]
+
+  RoleId:
+    Description: The RoleId of the IAM Role
+    Value: !GetAtt Role.RoleId
+    Export:
+      Name: !Join ["-", [!Ref "AWS::StackName", "role-id"]]
+
+  PolicyName:
+    Description: The Name of the IAM Policy
+    Value: !Ref Policy
+    Export:
+      Name: !Join ["-", [!Ref "AWS::StackName", "policy-name"]]
