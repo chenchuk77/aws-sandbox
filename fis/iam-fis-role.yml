@@ -1,10 +1,14 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: This template provisions an IAM Role intended for use by the EC2 service, and an IAM Policy associated with the role that grants read access to all CloudWatch logs.
 Parameters:
-  TestInstance:
+  TestInstance1:
     Type: String
     Description: InstanceId of the EC2 instance to start/stop by fis
-    Default: i-0beb9b461e8e8090e
+    Default: i-002b345848e4eaf42
+  TestInstance2:
+    Type: String
+    Description: InstanceId of the EC2 instance to start/stop by fis
+    Default: i-0e6b4676d0c8647e9
   TestRDS:
     Type: String
     Description: InstanceId of the RDS to reboot by fis
@@ -58,7 +62,12 @@ Resources:
             Action:
               - ec2:StartInstances
               - ec2:StopInstances
-            Resource: !Sub "arn:aws:ec2:*:*:instance/${TestInstance}"
+              - ssm:SendCommand
+            Resource:
+              - !Sub "arn:aws:ec2:*:*:instance/${TestInstance1}"
+              - !Sub "arn:aws:ec2:*:*:instance/${TestInstance2}"
+              - !Sub "arn:aws:ssm:${AWS::Region}::document/AWSFIS-Run-CPU-Stress"
+
           - Sid: AllowFISExperimentRoleRDSReadOnly
             Effect: Allow
             Action:

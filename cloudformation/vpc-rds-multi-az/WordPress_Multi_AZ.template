@@ -87,6 +87,10 @@
       ],
       "ConstraintDescription": "must be a valid EC2 instance type."
     },
+    "IamInstanceProfile": {
+      "Description": "IAM Instance Profile to attach (not really ROLE, but similar)",
+      "Type": "String"
+    },
     "SSHLocation": {
       "Description": "The IP address range that can be used to SSH to the EC2 instances",
       "Type": "String",
@@ -925,22 +929,11 @@
         "LaunchTemplateName":"WpLaunchTemplate-temp",
         "LaunchTemplateData":{
           "ImageId": {
-            "Fn::FindInMap": [
-              "AWSRegionArch2AMI",
-              {
-                "Ref": "AWS::Region"
-              },
-              {
-                "Fn::FindInMap": [
-                  "AWSInstanceType2Arch",
-                  {
-                    "Ref": "InstanceType"
-                  },
-                  "Arch"
-                ]
-              }
+            "Fn::FindInMap": ["AWSRegionArch2AMI",{"Ref": "AWS::Region"},
+              {"Fn::FindInMap": ["AWSInstanceType2Arch",{"Ref": "InstanceType"},"Arch"]}
             ]
           },
+          "IamInstanceProfile": {"Name": {"Ref":"IamInstanceProfile"}},
           "InstanceType": {
             "Ref": "InstanceType"
           },

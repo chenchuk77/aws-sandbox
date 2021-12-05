@@ -20,6 +20,10 @@
     "ParameterValue": "t2.micro"
   },
   {
+    "ParameterKey": "IamInstanceProfile",
+    "ParameterValue": "SSMManagedInstanceProfileRole-temp"
+  },
+  {
     "ParameterKey": "DBClass",
     "ParameterValue": "db.t3.micro"
   },
