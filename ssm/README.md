@@ -1,51 +1,25 @@
 # SSM
 AWS Systems Manager (formerly known as SSM) is an AWS service that you can use to view and control your infrastructure on AWS. Using the Systems Manager console, you can view operational data from multiple AWS services and automate operational tasks across your AWS resources.
 
-
-### Names and examples
-* Systems Manager Agent: SSM Agent
-* Systems Manager parameters: SSM parameters
-* Systems Manager service endpoints: ssm.us-east-2.amazonaws.com
-* AWS CloudFormation resource types: AWS::SSM::Document
-* AWS Config rule identifier: EC2_INSTANCE_MANAGED_BY_SSM
-* AWS Command Line Interface (AWS CLI) commands: aws ssm describe-patch-baselines
-* AWS Identity and Access Management (IAM) managed policy names: AmazonSSMReadOnlyAccess
-* Systems Manager resource ARNs: arn:aws:ssm:us-east-2:111222333444:patchbaseline/pb-07d8884178EXAMPLE
-
-### ssm documents (private/public [aws/community])
-get list:
+### Working with SSM Documents
+Get a list:
 ```
-# get a list
+aws ssm list-documents
 aws ssm list-documents \
-    --profile chenal \
-    > ssm.list.output.yaml
-
-aws ssm list-documents \
-    --profile chenal \
-    --filters Key=Owner,Values=Public --output yaml\
-    > ssm.list.public.ouput.yaml
+    --filters Key=Owner,Values=Public \
+    --output yaml > ssm.list.yaml
 ```
-query item (ssm doc) :
+Query item (ssm doc) :
 ```
 # AWS docs started with AWS*
 aws ssm describe-document \
-    --profile chenal \
-    --output yaml \
-    --name AWS-ConfigureCloudWatchOnEC2Instance \
-    > ssm.item.AWS-ConfigureCloudWatchOnEC2Instance.output.yaml
-    
-aws ssm describe-document \
-    --profile chenal \
-    --output yaml \
-    --name AWSFIS-Run-Memory-Stress \
-    > ssm.item.AWSFIS-Run-Memory-Stress.output.yaml
+    --name AWSFIS-Run-Memory-Stress
 
-# public docs use ARN's
+# Public docs use ARN's (Not tested! shown as example ONLY)
 aws ssm describe-document \
-    --name arn:aws:ssm:eu-west-1:185030254733:document/nak2k-InstallNode \
-    > ssm.item.public.InstallNode.output.yml
+    --name arn:aws:ssm:eu-west-1:185030254733:document/nak2k-InstallNode
 ```
-query item content (execution steps/code):
+Query item content (execution steps/code):
 ```
 aws ssm get-document \
     --name AWS-ConfigureDocker \
@@ -57,20 +31,13 @@ aws ssm get-document \
     --output json | jq '.Content|fromjson'
 ```
 
-### Create managed-instance:
-1. Create iam-profile (done with aws-console)
-   * Note: AWS console shows 'SSM-ROLE' but not 'IAM Profile' (which is NOT the same) 
-   this can be shows from awscli.
-2. Create a LaunchTemplate with all the required properties (vpc, subnet, instance_type, iam_profile... etc)
-3. Launch an instance from the LaunchTemplate
-4. Manage the instance from AWS Network-Manager (SSM service)
+Create Managed-Instance (Managed by SSM):
 ```
 aws cloudformation create-stack \
-      --stack-name stack-mi-temp \
-      --template-body file://ManagedInstanceForSSM.template \
-      --parameters file://ManagedInstanceForSSM.json \
-      --capabilities CAPABILITY_IAM \
-      --disable-rollback
+    --stack-name stack-mi-temp \
+    --template-body file://ManagedInstanceForSSM.template \
+    --parameters file://ManagedInstanceForSSM.json \
+    --capabilities CAPABILITY_IAM 
 ```
 
 ### Add Wordpress to ASG using SSM document
@@ -90,24 +57,3 @@ aws ssm start-automation-execution \
     --parameters '{"AdditionalStorage":["10"],"DBInstanceIdentifier":["sdzota1zoam2an"]}' \
     --region eu-west-1
 ```
-
-
-
-#### SSM Templates to check
-- AWS-HelloWorld
-- AWS-HelloWorldChangeTemplate
-- AWS-StopEC2Ins
-- AWS-StopEC2InstanceWithApprovaltance
-- AWS-TerminateEC2InstanceWithApproval
-- AWSSupport-CopyEC2Instance
-- AWSSupport-ListEC2Resources
-- AWSSupport-SetupIPMonitoringFromVPC
-- AWSResilienceHub-InjectCpuLoadInAsgTest_2021-09-22
-- AWSResilienceHub-ScaleOutAsgSOP_2020-07-01
-- arn:aws:ssm:eu-west-1:605677978325:document/SSM_Apache
-- arn:aws:ssm:eu-west-1:536253303170:document/FIS-ARS-RemoveHTTP500
-- arn:aws:ssm:eu-west-1:536253303170:document/FIS-ARS-HTTP500
-- arn:aws:ssm:eu-west-1:536253303170:document/FIS-ARS-AddHTTP500
-
-
-
