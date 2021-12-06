@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "VpcId",
+    "ParameterValue": "vpc-0933596d51f662ca0"
+  },
+  {
+    "ParameterKey": "Subnet",
+    "ParameterValue": "subnet-0f518055ebe79abba"
+  },
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "key-wp-temp"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "t2.micro"
+  },
+  {
+    "ParameterKey": "IamInstanceProfile",
+    "ParameterValue": "SSMManagedInstanceProfileRole-temp"
+  },
+  {
+    "ParameterKey": "SSHLocation",
+    "ParameterValue": "0.0.0.0/0"
+  }
+]

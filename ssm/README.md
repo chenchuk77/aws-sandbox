@@ -60,18 +60,20 @@ aws ssm get-document \
 ```
 
 ### Create managed-instance:
-1. create iam-profile (done with aws-console)
+1. Create iam-profile (done with aws-console)
    * Note: AWS console shows 'SSM-ROLE' but not 'IAM Profile' (which is NOT the same) 
    this can be shows from awscli.
-2. launch instance with the attached iam-profile
-3. manage the instance from AWS Network-Manager (SSM service)
+2. Create a LaunchTemplate with all the required properties (vpc, subnet, instance_type, iam_profile... etc)
+3. Launch an instance from the LaunchTemplate
+4. Manage the instance from AWS Network-Manager (SSM service)
 ```
- aws cloudformation create-stack \
+aws cloudformation create-stack \
       --stack-name stack-mi-temp \
-      --template-body file://managed-instance.template \
-      --parameters file://managed-instance.json \
+      --template-body file://ManagedInstanceForSSM.template \
+      --parameters file://ManagedInstanceForSSM.json \
       --capabilities CAPABILITY_IAM \
       --disable-rollback
+
 
 ```
 
