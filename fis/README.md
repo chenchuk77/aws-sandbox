@@ -19,4 +19,3 @@ aws cloudformation create-stack \
  
 ### Run experiment from template
 From AWS FIS Console start the experiment
-
