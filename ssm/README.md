@@ -44,7 +44,6 @@ aws ssm describe-document \
 aws ssm describe-document \
     --name arn:aws:ssm:eu-west-1:185030254733:document/nak2k-InstallNode \
     > ssm.item.public.InstallNode.output.yml
-
 ```
 query item content (execution steps/code):
 ```
@@ -56,7 +55,6 @@ aws ssm get-document \
 aws ssm get-document \
     --name AWS-UpdateCloudFormationStackWithApproval \
     --output json | jq '.Content|fromjson'
-
 ```
 
 ### Create managed-instance:
@@ -73,9 +71,27 @@ aws cloudformation create-stack \
       --parameters file://ManagedInstanceForSSM.json \
       --capabilities CAPABILITY_IAM \
       --disable-rollback
-
-
 ```
+
+### Add Wordpress to ASG using SSM document
+```
+aws ssm start-automation-execution \
+    --document-name "LaunchAndAttachToAsg" \
+    --document-version "\$DEFAULT" \
+    --parameters '{"LaunchTemplateName":["WpLaunchTemplate-temp"],"AutoScallingGroupName":["stack-aws-wpmaz-temp-WebServerGroup-WZ32T2YOMK0I"],"OperatorEMail":["chenchuk@gmail.com"],"KeyName":["key-wp-temp"],"Subnets":["subnet-0f518055ebe79abba,subnet-0910c7a5b65d2b4a7"],"DBPassword":["12345678"],"VpcId":["vpc-0933596d51f662ca0"],"DbSubGroup":["chen-temp-eu-west-1-dbsg"],"DBUser":["user"]}' \
+    --region eu-west-1
+```
+
+### Increase RDS Storage
+```
+aws ssm start-automation-execution \
+    --document-name "AddRdsStorage" \
+    --document-version "\$DEFAULT" \
+    --parameters '{"AdditionalStorage":["10"],"DBInstanceIdentifier":["sdzota1zoam2an"]}' \
+    --region eu-west-1
+```
+
+
 
 #### SSM Templates to check
 - AWS-HelloWorld

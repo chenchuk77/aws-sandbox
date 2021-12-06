@@ -11,6 +11,8 @@ aws cloudformation create-stack \
   --capabilities CAPABILITY_NAMED_IAM 
 ```
 
+
+
 Launch instance from template (used for testing IAM profiles)
 ```
 aws ec2 run-instances \
@@ -21,7 +23,11 @@ aws ec2 run-instances \
     'ResourceType=instance,Tags=[{Key=Name,Value=WordPress-MI},{Key=deployed,Value=run-instances}]'
 ```
 
-
+Create Experiment-Template (AWS FIS console)
+1. Create action for cpu-stress.
+2. Create targets by tag Name=aws-wpmaz-temp.
+3. Optional: export to fis-inject-cpu-to-wordpress.json
+4. Run experiment.
 
 
 #### TODO:

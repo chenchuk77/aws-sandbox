@@ -4,11 +4,11 @@ Parameters:
   TestInstance1:
     Type: String
     Description: InstanceId of the EC2 instance to start/stop by fis
-    Default: i-002b345848e4eaf42
+    Default: i-045bd16ffef78adc9
   TestInstance2:
     Type: String
     Description: InstanceId of the EC2 instance to start/stop by fis
-    Default: i-0e6b4676d0c8647e9
+    Default: i-0b2ea6ca90afb7cac
   TestRDS:
     Type: String
     Description: InstanceId of the RDS to reboot by fis
@@ -28,8 +28,7 @@ Resources:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          -
-            Effect: "Allow"
+          - Effect: "Allow"
             Principal:
               Service:
                 - fis.amazonaws.com
@@ -47,39 +46,39 @@ Resources:
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Sid: AllowFISExperimentRoleCloudWatchActions
+          - Sid: AllowFisReadOnly
             Effect: Allow
             Action:
               - cloudwatch:DescribeAlarms
-            Resource: '*'
-          - Sid: AllowFISExperimentRoleEC2ReadOnly
-            Effect: Allow
-            Action:
               - ec2:DescribeInstances
+              - iam:ListRoles
+              - rds:DescribeDBInstances
+              - rds:DescribeDbClusters
+              - ssm:ListCommands
             Resource: '*'
-          - Sid: AllowFISExperimentRoleEC2Actions
+          - Sid: AllowFisEc2Actions
             Effect: Allow
             Action:
               - ec2:StartInstances
               - ec2:StopInstances
+            Resource:
+              - !Sub "arn:aws:ec2:*:*:instance/${TestInstance1}"
+              - !Sub "arn:aws:ec2:*:*:instance/${TestInstance2}"
+          - Sid: AllowFisSsmSendCommand
+            Effect: Allow
+            Action:
               - ssm:SendCommand
             Resource:
               - !Sub "arn:aws:ec2:*:*:instance/${TestInstance1}"
               - !Sub "arn:aws:ec2:*:*:instance/${TestInstance2}"
               - !Sub "arn:aws:ssm:${AWS::Region}::document/AWSFIS-Run-CPU-Stress"
-
-          - Sid: AllowFISExperimentRoleRDSReadOnly
+              - "arn:aws:ssm:*:*:document/*"
+          - Sid: AllowFisSsmCancelCommand
             Effect: Allow
             Action:
-              - rds:DescribeDBInstances
-              - rds:DescribeDbClusters
+              - ssm:CancelCommand
             Resource: '*'
-          - Sid: AllowFISExperimentRoleRDSReboot
-            Effect: Allow
-            Action:
-              - rds:RebootDBInstance
-              - ec2:StopInstances
-            Resource: !Sub "arn:aws:rds:*:*:db:${TestRDS}"
+
 
 Outputs:
   RoleName:

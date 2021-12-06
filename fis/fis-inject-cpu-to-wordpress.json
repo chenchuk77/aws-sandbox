@@ -1,0 +1,36 @@
+{
+  "description": "Inject CPU load to Wordpress ASG Instances",
+  "targets": {
+    "Wordpress-Instances": {
+      "resourceType": "aws:ec2:instance",
+      "resourceTags": {
+        "Name": "asg-wpmaz-temp"
+      },
+      "selectionMode": "ALL"
+    }
+  },
+  "actions": {
+    "StressCPU": {
+      "actionId": "aws:ssm:send-command",
+      "parameters": {
+        "documentArn": "arn:aws:ssm:eu-west-1::document/AWSFIS-Run-CPU-Stress",
+        "documentParameters": "{\"DurationSeconds\":\"120\"}",
+        "duration": "PT5M"
+      },
+      "targets": {
+        "Instances": "Wordpress-Instances"
+      }
+    }
+  },
+  "stopConditions": [
+    {
+      "source": "none"
+    }
+  ],
+  "roleArn": "arn:aws:iam::390415077514:role/fis-role",
+  "tags": {
+    "todo": "delete me",
+    "Owner": "chen",
+    "Name": "Inject CPU load to Wordpress ASG Instances"
+  }
+}

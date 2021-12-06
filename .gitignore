@@ -1,2 +1,4 @@
 tasks/README.confidential.md
 tasks/key-wp-temp.pem
+/__OLD/
+/cloudformation/vpc-rds-multi-az/output.check-web
