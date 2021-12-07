@@ -19,3 +19,9 @@ aws cloudformation create-stack \
  
 ### Run experiment from template
 From AWS FIS Console start the experiment
+
+#### Links
+* [FIS - Introduction on YouTube](https://www.youtube.com/watch?v=D2px_s_FNi8&t=1234s)
+* [FIS - Configuring permissions](https://chaos-engineering.workshop.aws/en/030_basic_content/030_basic_experiment/10-permissions.html)
+
+
