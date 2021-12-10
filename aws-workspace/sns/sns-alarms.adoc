@@ -1,0 +1,30 @@
+
+= SNS Alarms
+
+[cols="4,5"]
+|====
+|Doc Version | 1
+|Status      | dev
+|====
+
+== Dependencies
+[cols="5,5,10"]
+|===
+|Document       | Version | Link
+|sns-parameters | 1       | xref:sns-parameters.adoc[sns-parameters.adoc]
+|===
+
+== Recommended Alarms
+
+
+=== Health Alarms
+
+
+:table-caption: Data Set
+[cols="2,2,1"]
+|===
+| Id | Name| Metric
+
+| sns:alarm:xxxxxxxxxx1 | alarm-1 | MessagesCount
+| sns:alarm:xxxxxxxxxx2 | alarm-2 | MessagesConsumed
+|===

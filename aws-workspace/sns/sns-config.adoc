@@ -1,0 +1,27 @@
+
+= SNS Configuration
+
+[cols="4,5"]
+|====
+|Doc Version | 1
+|Status      | dev
+|====
+
+== Dependencies
+[cols="5,5,10"]
+|===
+|Document       | Version | Link
+|sns-parameters | 1       | xref:sns-parameters.adoc[sns-parameters.adoc]
+|===
+
+== Recommended configuration
+
+=== SNS Topic
+SNS description here .......
+[cols="8a,10a"]
+|====
+|feature 1 | description
+|feature 2 | description
+|feature 3 | description
+|====
+
