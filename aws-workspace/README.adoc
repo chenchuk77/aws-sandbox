@@ -1,0 +1,7 @@
+
+= AWS Project example for SNS service
+
+
+This is an example a file-system structure for AWS project:
+
+*  SNS
