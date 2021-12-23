@@ -19,7 +19,12 @@ https://docs.aws.amazon.com/code-samples/latest/catalog/python-sns-sns_basics.py
 
 First setup topic and subscription
 ```   
-$ python3 message-generator.py setup
+#$ python3 message-generator.py setup
+
+aws cloudformation create-stack \
+    --stack-name stack-sns \        
+    --template-body file://sns.template \ 
+    --parameters file://sns.json
 ```
 
 Then start main loop to publish Coindesk status from api.coindesk.com

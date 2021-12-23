@@ -1,0 +1,11 @@
+[
+  {
+    "ParameterKey": "SubscriptionEndPoint",
+    "ParameterValue": "chenchuk@gmail.com"
+  },
+  {
+    "ParameterKey": "SubscriptionProtocol",
+    "ParameterValue": "email"
+  }
+
+]

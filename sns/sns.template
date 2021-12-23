@@ -1,0 +1,41 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Best Practice SNS Topic",
+  "Parameters": {
+    "SubscriptionEndPoint": {
+      "Type": "String"
+    },
+    "SubscriptionProtocol": {
+      "Type": "String",
+      "AllowedValues": ["http", "https", "email", "email-json", "sms", "sqs", "application", "lambda"],
+      "Default": "sqs"
+    }
+  },
+  "Resources": {
+    "SNSTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties" : {
+        "TopicName" : "coindesk-topic"
+      }
+    },
+    "SNSSubscription":{
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Endpoint": { "Ref": "SubscriptionEndPoint" },
+        "Protocol": { "Ref": "SubscriptionProtocol" },
+        "TopicArn": { "Ref": "SNSTopic" }
+      }
+    }
+  },
+  "Outputs": {
+    "TopicARN" : {
+      "Value" : { "Ref" : "SNSTopic" }
+    },
+    "QueueName" : {
+      "Value" : { "Fn::GetAtt" : ["SNSTopic", "TopicName"]}
+    }
+  }
+}
+
+
+

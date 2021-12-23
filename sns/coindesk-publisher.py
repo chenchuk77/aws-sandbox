@@ -1,16 +1,25 @@
-
 import json
 import urllib.request
-import sys
 import logging
 import time
 import boto3
 from botocore.exceptions import ClientError
 
+#logger = logging.getLogger(__main__)
 logger = logging.getLogger(__name__)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("debug.log"),
+        logging.StreamHandler()
+    ]
+)
 
 class SnsWrapper:
     """Encapsulates Amazon SNS topic and subscription functions."""
+
     def __init__(self, sns_resource):
         """
         :param sns_resource: A Boto3 Amazon SNS resource.
@@ -225,60 +234,42 @@ class SnsWrapper:
         else:
             return message_id
 
+
 def usage():
     print('usage:')
-    print('python3 message-generator.py {setup|test|loop}')
-    print('example:')
-    print('python3 message-generator.py loop')
+    print('python3 coindesk-publisher.py')
 
 
-def main():    
-    if len(sys.argv) != 2:
-        usage()
-        return
-    #print ('args: {}'.format(str(sys.argv)))
+def main():
     sns_wrapper = SnsWrapper(boto3.resource('sns'))
-    topic_name = 'chen-demo-topic'
+    topic_name = 'coindesk-topic'
     topic = sns_wrapper.create_topic(topic_name)
 
-    # python3 message-generator.py setup
-    # python3 message-generator.py send
-    if sys.argv[1] == 'setup':
-        print('adding email subscriber')
-        email_sub = sns_wrapper.subscribe(topic, 'email', 'chenchuk@gmail.com')
-        print('confirm subscription in mailbox and rerun without setup')
-        return
-    elif sys.argv[1] == 'test':
-        print('sending 3 messages')
-        for i in range(3):
-            message = f'this is message #{i}'
-            attributes = {'publisher': 'python', 'id': i, 'ts': time.time_ns()}
-            sns_wrapper.publish_message(topic, message, attributes)
-    elif sys.argv[1] == 'loop':
-        print('entering main loop ...')
-        while True:
-            # get record and create a new json struct
-            url='https://api.coindesk.com/v1/bpi/currentprice.json'
-            json_data = {}                                                             
-            with urllib.request.urlopen(url) as url:  
-                json_data = json.loads(url.read().decode()) 
-                message = {
-                    "updated": json_data['time']['updatedISO'],
-                    "USD": json_data['bpi']['USD']['rate_float'],    
-                    "GBP": json_data['bpi']['GBP']['rate_float'],    
-                    "EUR": json_data['bpi']['USD']['rate_float']     
-                }
-                print('sending message: {}'.format(str(message)))
-                attributes = {'publisher': 'pythonloop', 'source': 'coindesk', 'ts': time.time_ns()}
-                sns_wrapper.publish_message(topic, str(message), attributes)
-            time.sleep(60)
-    else:
-        usage()
-        return
+    url = 'https://api.coindesk.com/v1/bpi/currentprice.json'
+    logger.info('Starting Coidesk-publisher.')
+    logger.info('Will fetch data from {}.'.format(url))
 
-    print('done')
+    while True:
+        try:
+            message = {}
+            with urllib.request.urlopen(url) as url:
+                json_data = json.loads(url.read().decode())
+                message = {"Coindesk": {"updated": json_data['time']['updatedISO'],"USD": json_data['bpi']['USD']['rate_float'],"GBP": json_data['bpi']['GBP']['rate_float'],"EUR": json_data['bpi']['USD']['rate_float']}}
+                logger.info('update message created: {}'.format(str(message)))
+        except Exception as e:
+            logger.error('err: {}'.format(str(e)))
+            message = {"Coindesk": {"updated": "00000000000","USD": 000,"GBP": 000,"EUR": 000}}
+            logger.info('fake message created: {}'.format(str(message)))
+
+        attributes = {'publisher': 'coindesk-publisher', 'source': 'coindesk', 'ts': time.time_ns()}
+        sns_wrapper.publish_message(topic, str(message), attributes)
+        logger.info('update published to topic.'.format(str(message)))
+        time.sleep(60)
+
+
+
+
 
 # run main
 if __name__ == '__main__':
    main()
-
