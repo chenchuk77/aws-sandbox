@@ -9,10 +9,20 @@
 publish via awscli:
 ```
 aws sns publish \
-    --topic-arn "arn:aws:sns:eu-west-1:168025714010:sam-sns-lambda-SimpleTopic-18BG1ME7L5AQS" \
-    --message file://events/event-sns.json
+    --topic-arn "arn:aws:sns:eu-west-1:168025714010:coindesk-topic" \
+    --message "Test message from AWSCli"
 ```
 
+publish message via SSM Automation document (Amazon owned):
+* NOTE: IAM Role 'SsmAutomationRoleChen' was configured manually using AWS console. 
+
+```
+aws ssm start-automation-execution \
+    --document-name "AWS-PublishSNSNotification" \
+    --document-version "\$DEFAULT" \
+    --parameters '{"TopicArn":["arn:aws:sns:eu-west-1:168025714010:coindesk-topic"],"Message":["Test from SSM Automation"],"AutomationAssumeRole":["arn:aws:iam::168025714010:role/SsmAutomationRoleChen"]}' \
+    --region eu-west-1
+```
 
 Links:
 * [SNS Homepage](https://aws.amazon.com/sns/?whats-new-cards.sort-by=item.additionalFields.postDateTime&whats-new-cards.sort-order=desc)
