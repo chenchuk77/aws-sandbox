@@ -2,10 +2,18 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Best Practice SNS Topic",
   "Parameters": {
-    "SubscriptionEndPoint": {
+    "SubscriptionEndPoint1": {
       "Type": "String"
     },
-    "SubscriptionProtocol": {
+    "SubscriptionProtocol1": {
+      "Type": "String",
+      "AllowedValues": ["http", "https", "email", "email-json", "sms", "sqs", "application", "lambda"],
+      "Default": "sqs"
+    },
+    "SubscriptionEndPoint2": {
+      "Type": "String"
+    },
+    "SubscriptionProtocol2": {
       "Type": "String",
       "AllowedValues": ["http", "https", "email", "email-json", "sms", "sqs", "application", "lambda"],
       "Default": "sqs"
@@ -18,21 +26,35 @@
         "TopicName" : "coindesk-topic"
       }
     },
-    "SNSSubscription":{
+    "SNSSubscription1":{
       "Type": "AWS::SNS::Subscription",
       "Properties": {
-        "Endpoint": { "Ref": "SubscriptionEndPoint" },
-        "Protocol": { "Ref": "SubscriptionProtocol" },
+        "Endpoint": { "Ref": "SubscriptionEndPoint1" },
+        "Protocol": { "Ref": "SubscriptionProtocol1" },
         "TopicArn": { "Ref": "SNSTopic" }
       }
+    },
+  "SNSSubscription2":{
+    "Type": "AWS::SNS::Subscription",
+    "Properties": {
+      "Endpoint": { "Ref": "SubscriptionEndPoint2" },
+      "Protocol": { "Ref": "SubscriptionProtocol2" },
+      "TopicArn": { "Ref": "SNSTopic" }
     }
-  },
+  }
+},
   "Outputs": {
     "TopicARN" : {
       "Value" : { "Ref" : "SNSTopic" }
     },
     "QueueName" : {
       "Value" : { "Fn::GetAtt" : ["SNSTopic", "TopicName"]}
+    },
+    "Subscriber1" : {
+      "Value" : { "Fn::Sub" : "${SubscriptionProtocol1} : ${SubscriptionEndPoint1}" }
+    },
+    "Subscriber2" : {
+      "Value" : { "Fn::Sub" : "${SubscriptionProtocol2} : ${SubscriptionEndPoint2}" }
     }
   }
 }

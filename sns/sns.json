@@ -1,11 +1,18 @@
 [
   {
-    "ParameterKey": "SubscriptionEndPoint",
+    "ParameterKey": "SubscriptionEndPoint1",
     "ParameterValue": "chenchuk@gmail.com"
   },
   {
-    "ParameterKey": "SubscriptionProtocol",
+    "ParameterKey": "SubscriptionProtocol1",
     "ParameterValue": "email"
+  },
+  {
+    "ParameterKey": "SubscriptionEndPoint2",
+    "ParameterValue": "+972544434545"
+  },
+  {
+    "ParameterKey": "SubscriptionProtocol2",
+    "ParameterValue": "sms"
   }
-
 ]
